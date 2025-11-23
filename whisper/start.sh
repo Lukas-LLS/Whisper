@@ -2,4 +2,4 @@
 
 sudo docker build -t whisper-whisper .
 
-sudo docker-compose up -d
+sudo docker compose up -d
