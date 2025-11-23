@@ -1,0 +1,14 @@
+services:
+  whisper:
+    image: whisper-whisper
+    container_name: whisper
+    restart: always
+    ports:
+      - "5001:5001"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [ gpu ]
