@@ -1,0 +1,5 @@
+# Send a HTTP request to http://localhost:5000/api/v1/transcribe with a test wav file as the body
+POST http://localhost:5001/api/v1/transcribe
+Content-Type: audio/wav
+
+< audio.wav
