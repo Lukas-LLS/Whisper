@@ -30,15 +30,10 @@ cd Whisper/whisper
 2. Install dependencies:
 ```bash
 pip install -r requirements.txt
-pip install torchaudio --extra-index-url https://download.pytorch.org/whl/cu116
+pip install torchaudio --extra-index-url https://download.pytorch.org/whl/cu130
 ```
 
-3. Download the Whisper model:
-```bash
-python download_model.py
-```
-
-4. Run the application:
+3. Run the application:
 ```bash
 python main.py
 ```
@@ -53,9 +48,15 @@ git clone https://github.com/Lukas-LLS/Whisper.git
 cd Whisper/whisper
 ```
 
-2. Build and run with Docker Compose:
+2. Build the Docker image:
 ```bash
-docker-compose up --build
+docker build -t whisper-whisper .
+```
+
+3. Build and run with Docker Compose:
+
+```bash
+docker compose up -d
 ```
 
 The API will be available at `http://localhost:5001`
