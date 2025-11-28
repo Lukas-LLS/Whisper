@@ -67,7 +67,7 @@ def detect_language(whisper_model: WhisperForConditionalGeneration, tokenizer: W
 
 
 def inference(audio_bytes):
-    pcm_channels, sample_rate = torchaudio.load(io.BytesIO(audio_bytes), backend="ffmpeg")
+    pcm_channels, sample_rate = torchaudio.load(io.BytesIO(audio_bytes), backend="soundfile")
     pcm = torch.mean(pcm_channels, dim=0)
     pcm = kill_extra_dynamic_range(pcm)
     pcm = torchaudio.transforms.Resample(sample_rate, 16000)(pcm)

@@ -2,7 +2,7 @@ FROM pytorch/pytorch:2.9.1-cuda13.0-cudnn9-runtime
 
 # install packages for health check and audio processing
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends curl ffmpeg \
+    && apt-get install -y --no-install-recommends curl ffmpeg libsndfile1 \
     && rm -rf /var/lib/apt/lists/*
 
 COPY . /app
