@@ -5,7 +5,6 @@ from typing import Optional, Collection, List, Dict
 import quart
 import torch
 import torchaudio
-import soundfile as sf
 from transformers import WhisperProcessor, WhisperTokenizer, WhisperForConditionalGeneration
 
 from whisper_model import WHISPER_MODEL_ID
@@ -68,21 +67,10 @@ def detect_language(whisper_model: WhisperForConditionalGeneration, tokenizer: W
 
 
 def inference(audio_bytes):
-    # Use soundfile directly to avoid torchaudio's torchcodec dependency
     try:
-        pcm_data, sample_rate = sf.read(io.BytesIO(audio_bytes))
+        pcm_channels, sample_rate = torchaudio.load(io.BytesIO(audio_bytes))
     except Exception as e:
         raise RuntimeError(f"Failed to read audio data: {e}")
-    # Convert to torch tensor and handle channel dimension
-    pcm_channels = torch.from_numpy(pcm_data).float()
-    if pcm_channels.dim() == 1:
-        # Mono audio - add channel dimension
-        pcm_channels = pcm_channels.unsqueeze(0)
-    elif pcm_channels.dim() == 2:
-        # Multi-channel audio - transpose to (channels, samples)
-        pcm_channels = pcm_channels.T
-    else:
-        raise RuntimeError(f"Unsupported audio format: expected 1 or 2 dimensions, got {pcm_channels.dim()}")
     pcm = torch.mean(pcm_channels, dim=0)
     pcm = kill_extra_dynamic_range(pcm)
     pcm = torchaudio.transforms.Resample(sample_rate, 16000)(pcm)
