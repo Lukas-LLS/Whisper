@@ -14,7 +14,8 @@ WORKDIR /app
 # install regular dependencies
 RUN pip3 install -r requirements.txt --no-cache-dir
 
-RUN pip3 install torchaudio torchcodec --extra-index-url https://download.pytorch.org/whl/cu130
+# Install torchaudio and torchcodec with matching versions for PyTorch 2.9.1
+RUN pip3 install torchaudio==2.9.1 torchcodec==0.8.1 --extra-index-url https://download.pytorch.org/whl/cu130
 
 #RUN pip3 install --force-reinstall markupsafe==2.0.1
 
