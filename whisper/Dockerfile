@@ -1,10 +1,12 @@
 FROM pytorch/pytorch:2.9.1-cuda13.0-cudnn9-runtime
 
-# install packages for health check and audio processing
-# Install FFmpeg with development libraries for torchcodec compatibility
+# install packages for health check
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends curl ffmpeg libavcodec-dev libavformat-dev libavutil-dev libswresample-dev \
+    && apt-get install -y --no-install-recommends curl \
     && rm -rf /var/lib/apt/lists/*
+
+# Install FFmpeg via conda-forge for proper torchcodec compatibility
+RUN conda install -y ffmpeg -c conda-forge
 
 COPY . /app
 WORKDIR /app
