@@ -11,7 +11,7 @@ WORKDIR /app
 # install regular dependencies
 RUN pip3 install -r requirements.txt --no-cache-dir
 
-RUN pip3 install torchaudio torchcodec --extra-index-url https://download.pytorch.org/whl/cu130
+RUN pip3 install torchaudio --extra-index-url https://download.pytorch.org/whl/cu130
 
 #RUN pip3 install --force-reinstall markupsafe==2.0.1
 
