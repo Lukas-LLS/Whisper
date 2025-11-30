@@ -1,6 +1,6 @@
 services:
   whisper:
-    image: whisper-whisper
+    image: whisper
     container_name: whisper
     restart: always
     ports:
