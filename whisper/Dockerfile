@@ -6,7 +6,11 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # Install FFmpeg via conda-forge for proper torchcodec compatibility
-RUN conda install -y ffmpeg -c conda-forge
+# Pin to FFmpeg 7.x which is supported by torchcodec
+RUN conda install -y 'ffmpeg>=7,<8' -c conda-forge
+
+# Set LD_LIBRARY_PATH so torchcodec can find FFmpeg libraries at runtime
+ENV LD_LIBRARY_PATH=/opt/conda/lib:${LD_LIBRARY_PATH}
 
 COPY . /app
 WORKDIR /app
