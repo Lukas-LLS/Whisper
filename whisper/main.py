@@ -14,6 +14,13 @@ if torch.cuda.is_available():
 else:
     device = "cpu"
 
+# DEBUG
+# Verify torchcodec is working without error before downloading model
+import torchcodec
+
+print(torchcodec.version)
+# END DEBUG
+
 app = quart.Quart(__name__)
 
 processor = WhisperProcessor.from_pretrained(WHISPER_MODEL_ID)
