@@ -1,4 +1,6 @@
 import io
+import os
+import sys
 import time
 from typing import Optional, Collection, List, Dict
 
@@ -14,11 +16,40 @@ if torch.cuda.is_available():
 else:
     device = "cpu"
 
-# DEBUG
-# Verify torchcodec is working without error before downloading model
+# DEBUG: Verify torchcodec is working without error before downloading model
 import torchcodec
 
-print(torchcodec.version)
+try:
+    tc_version = getattr(torchcodec, '__version__', getattr(torchcodec, 'version', 'unknown'))
+    print(f"torchcodec version: {tc_version}")
+except Exception as e:
+    print(f"torchcodec imported but version check failed: {e}")
+
+# Check if running in debug mode (via --debug argument or DEBUG env var)
+DEBUG_MODE = "--debug" in sys.argv or os.environ.get("DEBUG", "").lower() == "true"
+TEST_AUDIO_PATH = os.environ.get("TEST_AUDIO_PATH", "/app/audio.wav")
+
+if DEBUG_MODE:
+    print("DEBUG MODE: torchcodec imported successfully!")
+    print(f"PyTorch version: {torch.__version__}")
+    print(f"torchaudio version: {torchaudio.__version__}")
+    print(f"Device: {device}")
+    
+    # Test torchaudio.load with torchcodec backend
+    try:
+        # Try to load a test audio file if it exists
+        if os.path.exists(TEST_AUDIO_PATH):
+            print(f"Testing torchaudio.load with {TEST_AUDIO_PATH}...")
+            pcm_channels, sample_rate = torchaudio.load(TEST_AUDIO_PATH)
+            print(f"SUCCESS: Loaded audio - sample_rate={sample_rate}, shape={pcm_channels.shape}")
+        else:
+            print(f"Test audio file not found at {TEST_AUDIO_PATH}, skipping load test")
+    except Exception as e:
+        print(f"ERROR: torchaudio.load failed: {e}")
+        sys.exit(1)
+    
+    print("DEBUG MODE: All checks passed!")
+    sys.exit(0)
 # END DEBUG
 
 app = quart.Quart(__name__)

@@ -1,0 +1,38 @@
+name: Debug Torchcodec
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  debug-torchcodec:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./whisper
+          file: ./whisper/Dockerfile
+          push: false
+          load: true
+          tags: whisper:debug
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Run debug check
+        run: |
+          docker run --rm whisper:debug python3 main.py --debug
