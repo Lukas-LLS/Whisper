@@ -27,7 +27,51 @@ jobs:
           context: ./whisper
           file: ./whisper/Dockerfile
           push: false
+          load: true
           tags: whisper:test
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Run Docker container
+        run: |
+          docker run -d --name whisper-test -p 5001:5001 whisper:test
+          echo "Container started"
+
+      - name: Wait for server to be healthy
+        run: |
+          echo "Waiting for server to be ready..."
+          for i in {1..60}; do
+            if curl -s http://localhost:5001/health | grep -q "ok"; then
+              echo "Server is healthy!"
+              exit 0
+            fi
+            echo "Attempt $i: Server not ready yet, waiting..."
+            sleep 5
+          done
+          echo "Server failed to become healthy"
+          docker logs whisper-test
+          exit 1
+
+      - name: Test transcription with audio.wav
+        run: |
+          echo "Testing transcription..."
+          RESPONSE=$(curl -s -X POST http://localhost:5001/api/v1/transcribe \
+            -H "Content-Type: audio/wav" \
+            --data-binary @whisper/audio.wav)
+          echo "Response: $RESPONSE"
+          
+          # Check if response contains transcription field
+          if echo "$RESPONSE" | grep -q '"transcription"'; then
+            echo "Transcription test passed!"
+          else
+            echo "Transcription test failed - no transcription field in response"
+            docker logs whisper-test
+            exit 1
+          fi
+
+      - name: Stop container
+        if: always()
+        run: |
+          docker stop whisper-test || true
+          docker rm whisper-test || true
 
