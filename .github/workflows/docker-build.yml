@@ -41,7 +41,9 @@ jobs:
         run: |
           echo "Waiting for server to be ready..."
           for i in {1..60}; do
-            if curl -s http://localhost:5001/health | grep -q "ok"; then
+            RESPONSE=$(curl -s http://localhost:5001/health || echo '{}')
+            STATUS=$(echo "$RESPONSE" | jq -r '.status // empty')
+            if [ "$STATUS" = "ok" ]; then
               echo "Server is healthy!"
               exit 0
             fi
@@ -55,16 +57,28 @@ jobs:
       - name: Test transcription with audio.wav
         run: |
           echo "Testing transcription..."
-          RESPONSE=$(curl -s -X POST http://localhost:5001/api/v1/transcribe \
+          HTTP_CODE=$(curl -s -o /tmp/response.json -w "%{http_code}" -X POST http://localhost:5001/api/v1/transcribe \
             -H "Content-Type: audio/wav" \
             --data-binary @whisper/audio.wav)
+          
+          RESPONSE=$(cat /tmp/response.json)
+          echo "HTTP Status: $HTTP_CODE"
           echo "Response: $RESPONSE"
           
-          # Check if response contains transcription field
-          if echo "$RESPONSE" | grep -q '"transcription"'; then
+          # Check HTTP status code
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "Transcription test failed - HTTP status code: $HTTP_CODE"
+            docker logs whisper-test
+            exit 1
+          fi
+          
+          # Check if response contains non-empty transcription field
+          TRANSCRIPTION=$(echo "$RESPONSE" | jq -r '.transcription // empty')
+          if [ -n "$TRANSCRIPTION" ]; then
+            echo "Transcription result: $TRANSCRIPTION"
             echo "Transcription test passed!"
           else
-            echo "Transcription test failed - no transcription field in response"
+            echo "Transcription test failed - no transcription or empty transcription in response"
             docker logs whisper-test
             exit 1
           fi
