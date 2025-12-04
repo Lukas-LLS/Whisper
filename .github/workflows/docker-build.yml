@@ -10,7 +10,7 @@ on:
 
 jobs:
   docker-build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     permissions:
       contents: read
 
@@ -27,7 +27,65 @@ jobs:
           context: ./whisper
           file: ./whisper/Dockerfile
           push: false
+          load: true
           tags: whisper:test
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Run Docker container
+        run: |
+          docker run -d --name whisper-test -p 5001:5001 whisper:test
+          echo "Container started"
+
+      - name: Wait for server to be healthy
+        run: |
+          echo "Waiting for server to be ready..."
+          for i in {1..60}; do
+            RESPONSE=$(curl -s http://localhost:5001/health || echo '{}')
+            STATUS=$(echo "$RESPONSE" | jq -r '.status // empty')
+            if [ "$STATUS" = "ok" ]; then
+              echo "Server is healthy!"
+              exit 0
+            fi
+            echo "Attempt $i: Server not ready yet, waiting..."
+            sleep 5
+          done
+          echo "Server failed to become healthy"
+          docker logs whisper-test
+          exit 1
+
+      - name: Test transcription with audio.wav
+        run: |
+          echo "Testing transcription..."
+          HTTP_CODE=$(curl -s -o /tmp/response.json -w "%{http_code}" -X POST http://localhost:5001/api/v1/transcribe \
+            -H "Content-Type: audio/wav" \
+            --data-binary @whisper/audio.wav)
+          
+          RESPONSE=$(cat /tmp/response.json)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $RESPONSE"
+          
+          # Check HTTP status code
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "Transcription test failed - HTTP status code: $HTTP_CODE"
+            docker logs whisper-test
+            exit 1
+          fi
+          
+          # Check if response contains non-empty transcription field
+          TRANSCRIPTION=$(echo "$RESPONSE" | jq -r '.transcription // empty')
+          if [ -n "$TRANSCRIPTION" ]; then
+            echo "Transcription result: $TRANSCRIPTION"
+            echo "Transcription test passed!"
+          else
+            echo "Transcription test failed - no transcription or empty transcription in response"
+            docker logs whisper-test
+            exit 1
+          fi
+
+      - name: Stop container
+        if: always()
+        run: |
+          docker stop whisper-test || true
+          docker rm whisper-test || true
 
