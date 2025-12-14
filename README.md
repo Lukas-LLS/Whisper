@@ -109,10 +109,10 @@ print(response.json()['transcription'])
 
 ### Whisper Model
 
-The default model is `openai/whisper-medium`. To use a different model, edit `whisper/whisper_model.py`:
+The default model is `openai/whisper-large-v3`. To use a different model, edit `whisper/whisper_model.py`:
 
 ```python
-WHISPER_MODEL_ID = "openai/whisper-medium"  # Change to another model
+WHISPER_MODEL_ID = "openai/whisper-large-v3"
 ```
 
 Available models:
@@ -121,6 +121,9 @@ Available models:
 - `openai/whisper-small`
 - `openai/whisper-medium`
 - `openai/whisper-large`
+- `openai/whisper-large-v2`
+- `openai/whisper-large-v3`
+- `openai/whisper-large-v3-turbo`
 
 ### Server Configuration
 
