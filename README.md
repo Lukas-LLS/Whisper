@@ -1,6 +1,7 @@
 # Whisper Audio Transcription API
 
-A REST API service for audio transcription using OpenAI's Whisper model. This service provides automatic speech recognition with language detection capabilities.
+A REST API service for audio transcription using OpenAI's Whisper model. This service provides automatic speech
+recognition with language detection capabilities.
 
 ## Features
 
@@ -22,18 +23,21 @@ A REST API service for audio transcription using OpenAI's Whisper model. This se
 ### Local Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/Lukas-LLS/Whisper.git
 cd Whisper/whisper
 ```
 
 2. Install dependencies:
+
 ```bash
 pip install -r requirements.txt
 pip install torchaudio --extra-index-url https://download.pytorch.org/whl/cu130
 ```
 
 3. Run the application:
+
 ```bash
 python main.py
 ```
@@ -43,12 +47,14 @@ The API will be available at `http://localhost:5001`
 ### Docker Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/Lukas-LLS/Whisper.git
 cd Whisper/whisper
 ```
 
 2. Build the Docker image:
+
 ```bash
 docker build -t whisper-whisper .
 ```
@@ -101,7 +107,7 @@ with open('audio.wav', 'rb') as audio_file:
         headers={'Content-Type': 'audio/wav'},
         data=audio_file
     )
-    
+
 print(response.json()['transcription'])
 ```
 
@@ -116,6 +122,7 @@ WHISPER_MODEL_ID = "openai/whisper-large-v3"
 ```
 
 Available models:
+
 - `openai/whisper-tiny`
 - `openai/whisper-base`
 - `openai/whisper-small`
