@@ -4,5 +4,5 @@
 # WHISPER_MODEL_ID = "openai/whisper-medium"
 # WHISPER_MODEL_ID = "openai/whisper-large"
 # WHISPER_MODEL_ID = "openai/whisper-large-v2"
-WHISPER_MODEL_ID = "openai/whisper-large-v3"
-# WHISPER_MODEL_ID = "openai/whisper-large-v3-turbo"
+# WHISPER_MODEL_ID = "openai/whisper-large-v3"
+WHISPER_MODEL_ID = "openai/whisper-large-v3-turbo"
