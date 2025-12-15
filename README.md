@@ -56,7 +56,7 @@ cd Whisper/whisper
 2. Build the Docker image:
 
 ```bash
-docker build -t whisper-whisper .
+docker build -t whisper .
 ```
 
 3. Build and run with Docker Compose:
@@ -115,10 +115,10 @@ print(response.json()['transcription'])
 
 ### Whisper Model
 
-The default model is `openai/whisper-large-v3`. To use a different model, edit `whisper/whisper_model.py`:
+The default model is `openai/whisper-large-v3-turbo`. To use a different model, edit `whisper/whisper_model.py`:
 
 ```python
-WHISPER_MODEL_ID = "openai/whisper-large-v3"
+WHISPER_MODEL_ID = "openai/whisper-large-v3-turbo"
 ```
 
 Available models:
