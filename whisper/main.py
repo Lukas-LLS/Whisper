@@ -123,4 +123,5 @@ async def health_check():
 if __name__ == '__main__':
     print("Starting Whisper transcription server...")
     print("Using device:", device)
+    print("Model ID:", WHISPER_MODEL_ID)
     app.run(host="0.0.0.0", port=5001)
