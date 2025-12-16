@@ -33,7 +33,7 @@ cd Whisper/whisper
 
 ```bash
 pip install -r requirements.txt
-pip install torchaudio --extra-index-url https://download.pytorch.org/whl/cu130
+pip install torchaudio --extra-index-url https://download.pytorch.org/whl/cu129
 ```
 
 3. Run the application:
